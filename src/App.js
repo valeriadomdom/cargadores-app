@@ -10,6 +10,12 @@ const cargadoresIniciales = [
 
 function App() {
   const [cargadores, setCargadores] = useState(cargadoresIniciales);
+  const [busqueda, setBusqueda] = useState("");
+
+  const cargadoresFiltrados = cargadores.filter(c =>
+    c.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+    c.ubicacion.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   function cambiarEstado(id) {
     setCargadores(cargadores.map(c => {
@@ -49,8 +55,15 @@ function App() {
 
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-xl font-bold text-gray-700 mb-4">Estado de cargadores</h2>
+        <input
+          type="text"
+          placeholder="Buscar por nombre o ubicación..."
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          className="w-full border border-gray-200 rounded-lg p-3 mb-4 text-gray-600 focus:outline-none focus:border-blue-400"
+        />
         <div className="space-y-3">
-          {cargadores.map(cargador => (
+          {cargadoresFiltrados.map(cargador => (
             <TarjetaCargador
               key={cargador.id}
               cargador={cargador}

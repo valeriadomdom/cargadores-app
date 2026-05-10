@@ -1,16 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TarjetaCargador from './components/TarjetaCargador';
 
-const cargadoresIniciales = [
-  { id: 1, nombre: "Cargador 01", ubicacion: "Madrid Centro", estado: "disponible" },
-  { id: 2, nombre: "Cargador 02", ubicacion: "Madrid Norte", estado: "disponible" },
-  { id: 3, nombre: "Cargador 03", ubicacion: "Madrid Sur", estado: "mantenimiento" },
-  { id: 4, nombre: "Cargador 04", ubicacion: "Madrid Este", estado: "ocupado" },
-];
-
 function App() {
-  const [cargadores, setCargadores] = useState(cargadoresIniciales);
+  const [cargadores, setCargadores] = useState([]);
   const [busqueda, setBusqueda] = useState("");
+
+  // Pedir los cargadores al servidor cuando la app arranca
+  useEffect(() => {
+    fetch('http://localhost:4000/cargadores')
+      .then(res => res.json())
+      .then(datos => setCargadores(datos));
+  }, []);
 
   const cargadoresFiltrados = cargadores.filter(c =>
     c.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -18,12 +18,21 @@ function App() {
   );
 
   function cambiarEstado(id) {
-    setCargadores(cargadores.map(c => {
-      if (c.id !== id) return c;
-      if (c.estado === "disponible") return { ...c, estado: "ocupado" };
-      if (c.estado === "ocupado") return { ...c, estado: "mantenimiento" };
-      return { ...c, estado: "disponible" };
-    }));
+    const cargador = cargadores.find(c => c.id === id);
+    let nuevoEstado = "";
+    if (cargador.estado === "disponible") nuevoEstado = "ocupado";
+    else if (cargador.estado === "ocupado") nuevoEstado = "mantenimiento";
+    else nuevoEstado = "disponible";
+
+    fetch(`http://localhost:4000/cargadores/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estado: nuevoEstado })
+    }).then(() => {
+      setCargadores(cargadores.map(c =>
+        c.id === id ? { ...c, estado: nuevoEstado } : c
+      ));
+    });
   }
 
   const disponibles = cargadores.filter(c => c.estado === "disponible").length;

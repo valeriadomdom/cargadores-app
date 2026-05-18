@@ -6,12 +6,15 @@ function Login({ onLogin }) {
   const [error, setError] = useState("");
 
   function handleLogin() {
-   fetch('https://cargadores-servidor-production.up.railway.app/login´,{
+    fetch('https://cargadores-servidor-production.up.railway.app/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     })
-    .then(function(res) { return res.json(); })
+    .then(function(res) {
+      if (!res.ok) throw new Error('Error del servidor: ' + res.status);
+      return res.json();
+    })
     .then(function(datos) {
       if (datos.token) {
         localStorage.setItem('token', datos.token);
@@ -20,6 +23,9 @@ function Login({ onLogin }) {
       } else {
         setError("Email o contraseña incorrectos");
       }
+    })
+    .catch(function() {
+      setError("No se pudo conectar con el servidor");
     });
   }
 
@@ -57,4 +63,4 @@ function Login({ onLogin }) {
   );
 }
 
-export default Login; 
+export default Login;

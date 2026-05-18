@@ -1,4 +1,4 @@
-function TarjetaCargador({ cargador, onCambiarEstado }) {
+function TarjetaCargador({ cargador, onCambiarEstado, onEliminar }) {
   let emoji = "";
   let color = "";
 
@@ -24,9 +24,14 @@ function TarjetaCargador({ cargador, onCambiarEstado }) {
       <div className="flex items-center gap-3">
         <span className="text-sm font-medium text-gray-500 capitalize">{cargador.estado}</span>
         <button
-          onClick={() => onCambiarEstado(cargador.id)}
+          onClick={function() { onCambiarEstado(cargador.id); }}
           className="bg-blue-500 text-white text-sm px-3 py-1 rounded-lg hover:bg-blue-600">
           Cambiar estado
+        </button>
+        <button
+          onClick={function() { onEliminar(cargador.id); }}
+          className="bg-red-500 text-white text-sm px-3 py-1 rounded-lg hover:bg-red-600">
+          Eliminar
         </button>
       </div>
     </div>

@@ -6,7 +6,7 @@ function Login({ onLogin }) {
   const [error, setError] = useState("");
 
   function handleLogin() {
-    fetch('cargadores-servidor-production.up.railway.app/login', {
+   fetch('https://cargadores-servidor-production.up.railway.app/login',
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
